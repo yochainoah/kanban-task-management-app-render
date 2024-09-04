@@ -30,6 +30,7 @@ app.options("*", cors());
 app.use(taskRouter);
 app.use(userRouter);
 app.use(boardRouter);
+//use client
 app.use(express.static(path.join(__dirname, "build")));
 
 app.get("/", (req, res) => {
