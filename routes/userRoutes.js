@@ -60,6 +60,22 @@ userRouter.post("/login", async (req, res) => {
   }
 });
 
+// const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+userRouter.get('/verifyToken', (req, res) => { 
+  try{
+    const token = req.headers.token;
+    const userData = jwt.verify(token, process.env.JWT_SECRET);
+    
+  } catch(error){
+    res.status(500).json({
+      message: error.message
+    })
+  }
+
+   
+})
+
 // npmjs.com/jsonwebtoken
 
 export default userRouter;
