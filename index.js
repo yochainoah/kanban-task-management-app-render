@@ -38,6 +38,12 @@ app.get("/", (req, res) => {
   return res.status(234).send("Welcome to kanban task managment app");
 });
 
+/*
+  app.get("*", (req, res) => {
+    res.sendFile(import.meta.dirname + "/dist/index.html")
+  });
+*/
+
 async function connect() {
   try {
     console.log(process.env.DB);
