@@ -31,18 +31,18 @@ app.use(taskRouter);
 app.use(userRouter);
 app.use(boardRouter);
 //use client
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, "dist")));
 
-app.get("/", (req, res) => {
-  console.log(req);
-  return res.status(234).send("Welcome to kanban task managment app");
+// app.get("/", (req, res) => {
+//   console.log(req);
+//   return res.status(234).send("Welcome to kanban task managment app");
+// });
+
+
+app.get("*", (req, res) => {
+  res.sendFile(import.meta.dirname + "/dist/index.html")
 });
 
-/*
-  app.get("*", (req, res) => {
-    res.sendFile(import.meta.dirname + "/dist/index.html")
-  });
-*/
 
 async function connect() {
   try {
