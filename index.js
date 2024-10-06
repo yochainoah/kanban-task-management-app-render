@@ -20,11 +20,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.json());
 
 app.use(cors()); // allows requests from anywhere
-// app.use(
-//   cors({
-//     origin: "https://kanban-task-management-app-frontend.vercel.app/",
-//   })
-// );
+
 
 app.options("*", cors());
 app.use(taskRouter);
