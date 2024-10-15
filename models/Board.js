@@ -3,7 +3,6 @@ import { model, Schema } from "mongoose";
 const columnSchema = new Schema({
   name: {
     type: String,
-    // enum: ["Todo", "Doing", "Done"],
   },
   tasks: [
     {

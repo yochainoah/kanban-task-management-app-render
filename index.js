@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import taskRouter from "./routes/taskRoutes.js";
 import boardRouter from "./routes/boardRoutes.js";
 import cors from "cors";
-import userRouter from "./routes/userRoutes.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -16,15 +15,12 @@ mongoose.set("strictPopulate", false);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
 app.use(express.json());
 
 app.use(cors()); // allows requests from anywhere
 
-
 app.options("*", cors());
 app.use(taskRouter);
-app.use(userRouter);
 app.use(boardRouter);
 //use client
 app.use(express.static(path.join(__dirname, "dist")));
@@ -34,15 +30,12 @@ app.use(express.static(path.join(__dirname, "dist")));
 //   return res.status(234).send("Welcome to kanban task managment app");
 // });
 
-
 app.get("*", (req, res) => {
-  res.sendFile(import.meta.dirname + "/dist/index.html")
+  res.sendFile(import.meta.dirname + "/dist/index.html");
 });
-
 
 async function connect() {
   try {
-    console.log(process.env.DB);
     await mongoose.connect(process.env.DB);
     console.log("App connected to database");
     app.listen(process.env.PORT, () => {

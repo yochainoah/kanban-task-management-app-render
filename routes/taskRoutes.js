@@ -12,7 +12,6 @@ const taskRouter = Router();
 //Route for creating a Task
 taskRouter.post("/addTask", async (req, res) => {
   try {
-    console.log("addTask body:", req.body);
     const { title, description, status, subtasks, boardId } = req.body;
 
     // boardId required so we can add the task to the board
@@ -67,6 +66,64 @@ taskRouter.get("/tasks/:id", async (req, res) => {
     res.status(500).send({ message: err.message });
   }
 });
+// update task after drop
+taskRouter.put(
+  "/tasks/updateStatus/:taskId/:newColumn/:boardId",
+  async (req, res) => {
+    const { taskId, newColumn, boardId } = req.params;
+    try {
+      // boardId required so we can add the task to the board
+      if (!boardId) {
+        return res.status(400).send("Missing boardId");
+      }
+
+      // find the board
+      const targetBoard = await Board.findById(boardId);
+      if (!targetBoard) {
+        return res.status(404).send("Board not found");
+      }
+
+      // find the task
+      const task = await Task.findById(taskId);
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+
+      // Remove the task from the old column
+      const oldColumnIndex = targetBoard.columns.findIndex(
+        (c) => c.name === task.status
+      );
+
+      if (oldColumnIndex > -1) {
+        targetBoard.columns[oldColumnIndex].tasks = targetBoard.columns[
+          oldColumnIndex
+        ].tasks.filter((tId) => tId.toString() !== taskId);
+      }
+
+      // Add the task to the new column
+      const newColumnIndex = targetBoard.columns.findIndex(
+        (c) => c.name === newColumn
+      );
+      if (newColumnIndex > -1) {
+        targetBoard.columns[newColumnIndex].tasks.push(taskId);
+      } else {
+        return res.status(400).send({ message: "Invalid status" });
+      }
+
+      // Save the updated board
+      await targetBoard.save();
+
+      // Update the task
+      task.status = newColumn;
+      await task.save();
+
+      return res.status(200).send(task);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({ message: err.message });
+    }
+  }
+);
 
 // Route for Update Task
 taskRouter.put("/tasks/:id", async (req, res) => {
@@ -144,11 +201,11 @@ taskRouter.delete("/tasks", async (req, res) => {
     if (!result) {
       return res.status(404).json({ message: "task not found" });
     }
-    
+
     const board = await Board.findById(boardId);
-    let column = board.columns.find(c => c.name === task.status);
-    let taskIndex = column.tasks.findIndex(t => t === task._id)
-    column.tasks.splice(taskIndex, 1)
+    let column = board.columns.find((c) => c.name === task.status);
+    let taskIndex = column.tasks.findIndex((t) => t === task._id);
+    column.tasks.splice(taskIndex, 1);
     await board.save();
 
     return res.status(200).send({ message: "Task deleted successfully" });
